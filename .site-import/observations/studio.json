@@ -1,0 +1,49 @@
+{
+  "source": "Uploaded code archive and bundled source screenshot; live source URL unavailable",
+  "source_browser_checks": "blocked: no published source URL supplied",
+  "preview_origin": "http://localhost:8080",
+  "controls": [
+    {
+      "control": "login rejection, login, refresh, logout",
+      "viewport": "desktop and phone",
+      "status": "passed",
+      "evidence": "/tmp/browser/noa/check_studio.py"
+    },
+    {
+      "control": "greeting, welcome image, material order button",
+      "viewport": "desktop",
+      "status": "passed",
+      "evidence": "/tmp/browser/noa/chat-desktop.png"
+    },
+    {
+      "control": "tool tester open, execute, result, close",
+      "viewport": "desktop",
+      "status": "passed",
+      "evidence": "/tmp/browser/noa/tool-desktop.png"
+    },
+    {
+      "control": "tool tester open, execute, result, close",
+      "viewport": "phone",
+      "status": "passed",
+      "evidence": "/tmp/browser/noa/tool-phone.png"
+    },
+    {
+      "control": "knowledge conflict, cancel, confirm entry",
+      "viewport": "desktop",
+      "status": "passed",
+      "evidence": "/tmp/browser/noa/knowledge-desktop.png"
+    },
+    {
+      "control": "knowledge scroll and table visibility",
+      "viewport": "phone",
+      "status": "passed",
+      "evidence": "/tmp/browser/noa/knowledge-phone.png"
+    }
+  ],
+  "unverified": [
+    "Live proxy operations: missing SABAN_KEY",
+    "Audio transcription: missing GEMINI_API_KEY",
+    "Vered original photo: HTTP 404",
+    "Source motion parity: no live source URL"
+  ]
+}

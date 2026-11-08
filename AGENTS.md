@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Preserve the imported studio UI and deterministic reply engine independently of the target TanStack bootstrap, so framework updates do not replace the source experience.
+- Studio access uses a server-only shared password and encrypted session; do not restore the source's fixed cookie flag or fallback password.
+- Preserve Saban proxy and Gemini transcription providers; missing credentials must not be reported as live success.

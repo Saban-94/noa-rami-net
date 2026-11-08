@@ -36,7 +36,8 @@ const PROMPT_SEED = `# חוקת נועה · סטודיו
 5. משטח מלט = 40 שקים. 60060 עץ, 60002 בלה.
 6. כלי כתיבה ב-Sandbox מסומנים [סימולציה].`;
 
-const TABLES: Record<string, { title: string; headers: string[]; rows: string[][] }> = {
+type TableKey = "contacts" | "sensitive" | "tech" | "trivia";
+const TABLES: Record<TableKey, { title: string; headers: string[]; rows: string[][] }> = {
   contacts: {
     title: "אנשי קשר וראמי",
     headers: ["שם", "תפקיד", "טלפון"],
@@ -213,7 +214,7 @@ export function StudioApp() {
     const buf = await blob.arrayBuffer();
     const bytes = new Uint8Array(buf);
     let binary = "";
-    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i] ?? 0);
     const base64 = btoa(binary);
     const res = await transcribeAudio({ data: { mimeType: blob.type || "audio/webm", base64 } });
     if (res.ok && res.text) await send(res.text);
@@ -238,7 +239,7 @@ export function StudioApp() {
 
   function commitKnowledge() {
     if (!pending) return;
-    const key = pending.bucket === "prompt" ? "tech" : pending.bucket;
+    const key: TableKey = pending.bucket === "prompt" ? "tech" : pending.bucket as TableKey;
     if (key in tables) {
       setTables((prev) => {
         const t = prev[key as keyof typeof prev];

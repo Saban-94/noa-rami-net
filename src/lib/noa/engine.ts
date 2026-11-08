@@ -254,11 +254,13 @@ export function lineDiff(before: string, after: string) {
   const rows: { kind: "same" | "add" | "del"; text: string }[] = [];
   const max = Math.max(a.length, b.length);
   for (let i = 0; i < max; i++) {
-    if (a[i] === b[i]) {
-      if (a[i] !== undefined) rows.push({ kind: "same", text: a[i] });
+    const beforeLine = a[i];
+    const afterLine = b[i];
+    if (beforeLine === afterLine) {
+      if (beforeLine !== undefined) rows.push({ kind: "same", text: beforeLine });
     } else {
-      if (a[i] !== undefined) rows.push({ kind: "del", text: a[i] });
-      if (b[i] !== undefined) rows.push({ kind: "add", text: b[i] });
+      if (beforeLine !== undefined) rows.push({ kind: "del", text: beforeLine });
+      if (afterLine !== undefined) rows.push({ kind: "add", text: afterLine });
     }
   }
   return rows.slice(0, 80);

@@ -144,7 +144,7 @@ export const WRITE_IDS = new Set([
   "harel_inquiry_upload_notify",
 ]);
 
-export const MEDIA: Record<string, { label: string; url: string }> = {
+export const MEDIA = {
   WELCOME_CARD_INVEST: {
     label: "לקוח חדש",
     url: media0.url,

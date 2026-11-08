@@ -1,3 +1,7 @@
+import media0 from "@/assets/noa/invest.jpg.asset.json";
+import media1 from "@/assets/noa/welcom.jpeg.asset.json";
+import media2 from "@/assets/noa/talmed.jpg.asset.json";
+import media3 from "@/assets/noa/Designer.png.asset.json";
 export type ToolKind = "read" | "write" | "ui";
 
 export type ToolDef = {
@@ -134,6 +138,7 @@ export const TOOLS: ToolDef[] = [
 ];
 
 export const WRITE_IDS = new Set([
+  "harel_inquiry_link",
   "inject_order",
   "schedule_meeting",
   "harel_inquiry_upload_notify",
@@ -142,22 +147,22 @@ export const WRITE_IDS = new Set([
 export const MEDIA: Record<string, { label: string; url: string }> = {
   WELCOME_CARD_INVEST: {
     label: "לקוח חדש",
-    url: "https://raw.githubusercontent.com/Saban-94/noa-invest/main/public/images/invest.jpg",
+    url: media0.url,
   },
   WELCOME_CARD: {
     label: "לקוח חוזר",
-    url: "https://raw.githubusercontent.com/Saban-94/noa-invest/main/public/images/welcom.jpeg",
+    url: media1.url,
   },
   WELCOME_CARD_VERED: {
     label: "ורד",
-    url: "https://raw.githubusercontent.com/Saban-94/noa-invest/main/public/images/rami-noa.jpeg",
+    url: "",
   },
   BRANCH_HATALMID: {
     label: "התלמיד 6",
-    url: "https://raw.githubusercontent.com/Saban-94/noa-invest/main/public/images/talmed.jpg",
+    url: media2.url,
   },
   SUCCESS_ORDER: {
     label: "הזמנה נקלטת",
-    url: "https://raw.githubusercontent.com/Saban-94/noa-invest/main/public/images/Designer.png",
+    url: media3.url,
   },
 };

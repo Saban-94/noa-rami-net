@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Lock, Moon, Sun, Radio } from "lucide-react";
 import { TOOLS } from "@/lib/noa/catalog";
 import {
@@ -87,7 +88,7 @@ export function StudioApp() {
   const [draft, setDraft] = useState("");
   const [typing, setTyping] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { id: "hello", from: "noa", text: "סטודיו נועה מוכן. בחרי מי אתה ושלחי הודעה.", time: nowTime(), ticks: "✓✓" },
+    { id: "hello", from: "noa", text: "סטודיו נועה מוכן. בחרי מי אתה ושלחי הודעה.", time: "", ticks: "✓✓" },
   ]);
   const [traces, setTraces] = useState<Trace[]>([]);
   const [openTrace, setOpenTrace] = useState<Trace | null>(null);
@@ -145,14 +146,17 @@ export function StudioApp() {
     });
   }
 
-  async function enter(e: React.FormEvent) {
+  async function enter(e: FormEvent) {
     e.preventDefault();
     setAuthError("");
-    const res = await studioLogin({ data: { password } });
+    let res;
+    try { res = await studioLogin({ data: { password } }); }
+    catch { setAuthError("הכניסה לא זמינה כרגע"); return; }
     if (!res.ok) {
       setAuthError("סיסמה לא נכונה");
       return;
     }
+    setPassword("");
     setAuthed(true);
   }
 
@@ -250,7 +254,7 @@ export function StudioApp() {
 
   if (!authed) {
     return (
-      <main className="grid min-h-dvh place-items-center px-4">
+      <main dir="rtl" className="grid min-h-dvh place-items-center px-4">
         <form onSubmit={enter} className="w-full max-w-sm rounded-[var(--radius-card)] border border-line bg-paper p-6 shadow-sm">
           <div className="mb-4 flex items-center gap-3">
             <span className="grid size-11 place-items-center rounded-2xl bg-pine text-sand">
@@ -273,16 +277,16 @@ export function StudioApp() {
             autoComplete="current-password"
           />
           {authError ? <p className="mb-2 text-sm text-danger">{authError}</p> : null}
-          <button type="submit" disabled={!ready} className="h-12 w-full rounded-xl bg-pine font-display font-semibold text-sand disabled:opacity-60">
+          <Button variant="imported" size="imported" type="submit" disabled={!ready} className="h-12 w-full rounded-xl bg-pine font-display font-semibold text-sand disabled:opacity-60">
             כניסה
-          </button>
+          </Button>
         </form>
       </main>
     );
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div dir="rtl" className="studio-shell flex min-h-dvh flex-col">
       <header className="sticky top-0 z-20 border-b border-line bg-paper/90 backdrop-blur">
         {mode === "live" ? (
           <div className="bg-danger px-3 py-1 text-center text-sm font-semibold text-sand">מצב LIVE · קריאות כתיבה אמיתיות לפרוקסי</div>
@@ -292,24 +296,24 @@ export function StudioApp() {
             <p className="font-display text-lg font-bold leading-none">סטודיו נועה</p>
             <p className="truncate text-xs text-muted">{proxyOn ? "פרוקסי מחובר" : "פרוקסי לא הוגדר · נתוני דמו"}</p>
           </div>
-          <button
+          <Button variant="imported" size="imported"
             type="button"
             onClick={askLive}
             className="inline-flex h-11 items-center gap-1 rounded-full border border-line px-3 text-sm font-semibold"
           >
             <Radio className="size-4" />
             {mode === "live" ? "LIVE" : confirmLive ? "לאשר LIVE שוב" : "Sandbox"}
-          </button>
-          <button type="button" onClick={toggleDark} className="grid size-11 place-items-center rounded-full border border-line" aria-label="ערכת צבע">
+          </Button>
+          <Button variant="imported" size="imported" type="button" onClick={toggleDark} className="grid size-11 place-items-center rounded-full border border-line" aria-label="ערכת צבע">
             {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-          </button>
-          <button
+          </Button>
+          <Button variant="imported" size="imported"
             type="button"
             className="h-11 rounded-full px-3 text-sm text-muted"
             onClick={() => studioLogout().then(() => setAuthed(false))}
           >
             יציאה
-          </button>
+          </Button>
         </div>
         <nav className="mx-auto flex max-w-6xl gap-1 px-3 pb-2">
           {(
@@ -319,14 +323,14 @@ export function StudioApp() {
               ["tools", "12 כלים"],
             ] as const
           ).map(([id, label]) => (
-            <button
+            <Button variant="imported" size="imported"
               key={id}
               type="button"
               onClick={() => setRoom(id)}
               className={`h-10 flex-1 rounded-full text-sm font-semibold ${room === id ? "bg-pine text-sand" : "bg-sand-2 text-ink"}`}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </nav>
       </header>
@@ -336,24 +340,24 @@ export function StudioApp() {
           <div className="flex min-h-0 flex-1 flex-col">
             <div className="flex gap-2 overflow-x-auto border-b border-line bg-paper px-3 py-2">
               {PERSONAS.map((p) => (
-                <button
+                <Button variant="imported" size="imported"
                   key={p.id}
                   type="button"
                   onClick={() => setPersona(p.id)}
                   className={`shrink-0 rounded-full px-3 py-2 text-sm ${persona === p.id ? "bg-pine text-sand" : "bg-sand-2"}`}
                 >
                   {p.name}
-                </button>
+                </Button>
               ))}
             </div>
             {persona === "harel" ? (
               <div className="flex gap-2 bg-paper px-3 py-2 text-sm">
-                <button type="button" className={`rounded-full px-3 py-1 ${harelMode === "address" ? "bg-pine text-sand" : "bg-sand-2"}`} onClick={() => setHarelMode("address")}>
+                <Button variant="imported" size="imported" type="button" className={`rounded-full px-3 py-1 ${harelMode === "address" ? "bg-pine text-sand" : "bg-sand-2"}`} onClick={() => setHarelMode("address")}>
                   על פי פנייה
-                </button>
-                <button type="button" className={`rounded-full px-3 py-1 ${harelMode === "quiet" ? "bg-pine text-sand" : "bg-sand-2"}`} onClick={() => setHarelMode("quiet")}>
+                </Button>
+                <Button variant="imported" size="imported" type="button" className={`rounded-full px-3 py-1 ${harelMode === "quiet" ? "bg-pine text-sand" : "bg-sand-2"}`} onClick={() => setHarelMode("quiet")}>
                   שקט
-                </button>
+                </Button>
               </div>
             ) : null}
             <div ref={scroller} className="wa-wallpaper min-h-[50dvh] flex-1 space-y-2 overflow-y-auto px-3 py-3">
@@ -389,23 +393,24 @@ export function StudioApp() {
             >
               <AudioButton onBlob={(b) => void onAudio(b)} />
               <textarea
+                aria-label="הודעה לנועה"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 rows={1}
                 placeholder="הודעה לנועה"
                 className="max-h-28 min-h-11 flex-1 resize-none rounded-2xl border border-line bg-sand px-3 py-2 outline-none"
               />
-              <button type="submit" className="h-11 rounded-full bg-pine px-4 font-semibold text-sand">
+              <Button variant="imported" size="imported" type="submit" className="h-11 rounded-full bg-pine px-4 font-semibold text-sand">
                 שליחה
-              </button>
+              </Button>
             </form>
           </div>
           <aside className={`border-line bg-paper lg:w-80 lg:border-s ${drawer ? "block" : "hidden lg:block"}`}>
             <div className="flex items-center justify-between px-3 py-2">
               <h2 className="font-display font-bold">מה נועה עושה</h2>
-              <button type="button" className="text-sm text-muted lg:hidden" onClick={() => setDrawer(false)}>
+              <Button variant="imported" size="imported" type="button" className="text-sm text-muted lg:hidden" onClick={() => setDrawer(false)}>
                 סגור
-              </button>
+              </Button>
             </div>
             <ul className="max-h-[40dvh] space-y-2 overflow-y-auto px-3 pb-4 lg:max-h-[70dvh]">
               {traces.length === 0 ? <li className="text-sm text-muted">עדיין אין קריאות כלים.</li> : null}
@@ -416,16 +421,16 @@ export function StudioApp() {
                     <span className="text-muted">{t.ms}ms</span>
                   </div>
                   <p className="text-muted">{t.ok ? "תקין" : "נכשל"}{t.simulated ? " · סימולציה" : ""}</p>
-                  <button type="button" className="mt-1 text-pine-2 underline" onClick={() => setOpenTrace(t)}>
+                  <Button variant="imported" size="imported" type="button" className="mt-1 text-pine-2 underline" onClick={() => setOpenTrace(t)}>
                     הצג JSON
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
           </aside>
-          <button type="button" className="fixed bottom-20 start-3 z-10 rounded-full bg-ink px-3 py-2 text-sm text-sand lg:hidden" onClick={() => setDrawer(true)}>
+          <Button variant="imported" size="imported" type="button" className="fixed bottom-20 start-3 z-10 rounded-full bg-ink px-3 py-2 text-sm text-sand lg:hidden" onClick={() => setDrawer(true)}>
             לוג כלים
-          </button>
+          </Button>
         </section>
       ) : null}
 
@@ -435,9 +440,9 @@ export function StudioApp() {
             <h2 className="font-display text-lg font-bold">עריכת ידע מול נועה</h2>
             <p className="mb-2 text-sm text-muted">טקסט חופשי יסווג ליעד, ייבדק מול סתירות, ויוצג כ-diff לפני שמירה.</p>
             <textarea value={studioText} onChange={(e) => setStudioText(e.target.value)} rows={5} className="w-full rounded-xl border border-line bg-sand p-3" placeholder="לדוגמה: משטח מלט הוא 50 שקים" />
-            <button type="button" onClick={stageKnowledge} className="mt-2 h-11 rounded-xl bg-pine px-4 font-semibold text-sand">
+            <Button variant="imported" size="imported" type="button" onClick={stageKnowledge} className="mt-2 h-11 rounded-xl bg-pine px-4 font-semibold text-sand">
               בדיקה לפני שמירה
-            </button>
+            </Button>
             {pending ? (
               <div className="mt-3 rounded-xl border border-line p-3 text-sm">
                 <p>יעד: {pending.bucket}</p>
@@ -447,8 +452,8 @@ export function StudioApp() {
                   <div className="diff-add">+ {pending.text}</div>
                 </pre>
                 <div className="mt-2 flex gap-2">
-                  <button type="button" className="h-10 rounded-xl bg-pine px-3 text-sand" onClick={commitKnowledge}>אשר שמירה</button>
-                  <button type="button" className="h-10 rounded-xl border border-line px-3" onClick={() => setPending(null)}>בטל</button>
+                  <Button variant="imported" size="imported" type="button" className="h-10 rounded-xl bg-pine px-3 text-sand" onClick={commitKnowledge}>אשר שמירה</Button>
+                  <Button variant="imported" size="imported" type="button" className="h-10 rounded-xl border border-line px-3" onClick={() => setPending(null)}>בטל</Button>
                 </div>
               </div>
             ) : null}
@@ -461,7 +466,7 @@ export function StudioApp() {
           <div className="rounded-[var(--radius-card)] border border-line bg-paper p-4">
             <div className="mb-2 flex items-center justify-between">
               <h2 className="font-display text-lg font-bold">prompt.v1</h2>
-              <button
+              <Button variant="imported" size="imported"
                 type="button"
                 className="h-10 rounded-xl bg-pine px-3 text-sm font-semibold text-sand"
                 onClick={() => {
@@ -471,7 +476,7 @@ export function StudioApp() {
                 }}
               >
                 שמירה ובדיקה בצ'אט
-              </button>
+              </Button>
             </div>
             <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={8} className="w-full rounded-xl border border-line bg-sand p-3 font-mono text-sm" />
             <div className="mt-2 max-h-40 overflow-auto rounded-xl border border-line text-xs">
@@ -485,9 +490,9 @@ export function StudioApp() {
             <div className="mt-4">
               <div className="mb-2 flex gap-2 overflow-x-auto">
                 {(Object.keys(tables) as (keyof typeof tables)[]).map((k) => (
-                  <button key={k} type="button" onClick={() => setActiveTable(k)} className={`shrink-0 rounded-full px-3 py-1 text-sm ${activeTable === k ? "bg-pine text-sand" : "bg-sand-2"}`}>
+                  <Button variant="imported" size="imported" key={k} type="button" onClick={() => setActiveTable(k)} className={`shrink-0 rounded-full px-3 py-1 text-sm ${activeTable === k ? "bg-pine text-sand" : "bg-sand-2"}`}>
                     {tables[k].title}
-                  </button>
+                  </Button>
                 ))}
               </div>
               <div className="overflow-x-auto">
@@ -510,7 +515,7 @@ export function StudioApp() {
                   </tbody>
                 </table>
               </div>
-              <button
+              <Button variant="imported" size="imported"
                 type="button"
                 className="mt-2 text-sm underline"
                 onClick={() => {
@@ -524,7 +529,7 @@ export function StudioApp() {
                 }}
               >
                 ייצוא CSV
-              </button>
+              </Button>
             </div>
           </div>
         </section>
@@ -540,7 +545,7 @@ export function StudioApp() {
               </div>
               <p className="text-sm text-muted">{tool.summary}</p>
               <p className="mt-1 font-mono text-xs text-pine-2">{tool.endpoint}</p>
-              <button
+              <Button variant="imported" size="imported"
                 type="button"
                 className="mt-3 h-10 rounded-xl bg-pine px-3 text-sm font-semibold text-sand"
                 onClick={() => {
@@ -554,7 +559,7 @@ export function StudioApp() {
                 }}
               >
                 הרץ בדיקה
-              </button>
+              </Button>
             </article>
           ))}
         </section>
@@ -567,7 +572,7 @@ export function StudioApp() {
             onClick={(e) => e.stopPropagation()}
             onSubmit={(e) => {
               e.preventDefault();
-              void runTool({ data: { id: tester.id, params: testerValues, mode } }).then(setTesterOut);
+              void runTool({ data: { id: tester.id, params: testerValues, mode } }).then(setTesterOut).catch((error: unknown) => setTesterOut({ id: "error", tool: tester.id, ms: 0, ok: false, simulated: false, params: {}, result: { ok: false, message: error instanceof Error ? error.message : "שגיאה" } }));
             }}
           >
             <h3 className="font-display text-lg font-bold">{tester.title}</h3>
@@ -582,8 +587,8 @@ export function StudioApp() {
               </label>
             ))}
             <div className="mt-3 flex gap-2">
-              <button type="submit" className="h-11 flex-1 rounded-xl bg-pine font-semibold text-sand">הרצה</button>
-              <button type="button" className="h-11 rounded-xl border border-line px-4" onClick={() => setTester(null)}>סגור</button>
+              <Button variant="imported" size="imported" type="submit" className="h-11 flex-1 rounded-xl bg-pine font-semibold text-sand">הרצה</Button>
+              <Button variant="imported" size="imported" type="button" className="h-11 rounded-xl border border-line px-4" onClick={() => setTester(null)}>סגור</Button>
             </div>
             {testerOut ? <pre className="mt-3 overflow-auto rounded-xl bg-sand p-3 text-xs">{JSON.stringify(testerOut.result, null, 2)}</pre> : null}
           </form>
@@ -603,6 +608,7 @@ export function StudioApp() {
 
 function CardView({ card, onPick }: { card: UiCard; onPick: (id: string) => void }) {
   if (card.type === "image") {
+    if (!card.src) return <p className="text-sm text-muted">{card.caption} · התמונה המקורית אינה זמינה</p>;
     return (
       <figure className="mt-2 overflow-hidden rounded-lg">
         <img src={card.src} alt="" className="max-h-44 w-full object-cover" />
@@ -614,9 +620,9 @@ function CardView({ card, onPick }: { card: UiCard; onPick: (id: string) => void
     return (
       <div className="mt-2 grid gap-1">
         {card.buttons.map((b) => (
-          <button key={b.id} type="button" onClick={() => onPick(b.id)} className="rounded-lg border border-line bg-paper py-2 text-sm font-semibold text-pine">
+          <Button variant="imported" size="imported" key={b.id} type="button" onClick={() => onPick(b.id)} className="rounded-lg border border-line bg-paper py-2 text-sm font-semibold text-pine">
             {b.title}
-          </button>
+          </Button>
         ))}
       </div>
     );
@@ -662,8 +668,8 @@ function AudioButton({ onBlob }: { onBlob: (b: Blob) => void }) {
     setRec(true);
   }
   return (
-    <button type="button" onClick={() => void toggle()} className={`grid size-11 place-items-center rounded-full border border-line ${rec ? "bg-danger text-sand" : ""}`} aria-label="הקלטה">
+    <Button variant="imported" size="imported" type="button" onClick={() => void toggle().catch(() => setRec(false))} className={`grid size-11 place-items-center rounded-full border border-line ${rec ? "bg-danger text-sand" : ""}`} aria-label="הקלטה">
       {rec ? "■" : "●"}
-    </button>
+    </Button>
   );
 }

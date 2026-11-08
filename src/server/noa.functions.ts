@@ -1,18 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
-import { deleteCookie, getCookie, setCookie } from "@tanstack/react-start/server";
+import { useSession } from "@tanstack/react-start/server";
+import { createHash, timingSafeEqual } from "node:crypto";
+import { z } from "zod";
 import { MEDIA, TOOLS, WRITE_IDS } from "@/lib/noa/catalog";
 import { planReply, type Json, type Trace } from "@/lib/noa/engine";
 
-const COOKIE = "noa_studio";
-
-function password() {
-  return process.env.STUDIO_PASSWORD || "saban1994";
+async function gateSession() {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) throw new Error("הכניסה עדיין לא הוגדרה");
+  return useSession<{ unlocked?: boolean }>({
+    name: "noa-studio", password: secret, maxAge: 60 * 60 * 14,
+    cookie: { httpOnly: true, secure: true, sameSite: "lax", path: "/" },
+  });
 }
-
-function assertGate() {
-  if (getCookie(COOKIE) !== "ok") {
-    throw new Error("נעול");
-  }
+async function assertGate() {
+  const session = await gateSession();
+  if (!session.data.unlocked) throw new Error("נעול");
 }
 
 async function callProxy(action: string, params: Record<string, string>): Promise<Json | null> {
@@ -104,7 +107,9 @@ function mockResult(id: string, params: Record<string, string>, simulated: boole
 
 async function executeTool(id: string, params: Record<string, string>, mode: "sandbox" | "live"): Promise<Trace> {
   const started = Date.now();
+  if (!TOOLS.some((t) => t.id === id)) throw new Error("כלי לא מוכר");
   const write = WRITE_IDS.has(id);
+  if (mode === "live" && !process.env.SABAN_KEY) throw new Error("החיבור החי עדיין לא הוגדר");
   const simulated = write && mode !== "live";
   let result: Json = null;
   let ok = true;
@@ -129,7 +134,7 @@ async function executeTool(id: string, params: Record<string, string>, mode: "sa
 
 export const studioStatus = createServerFn({ method: "GET" }).handler(async () => {
   return {
-    authed: getCookie(COOKIE) === "ok",
+    authed: Boolean((await gateSession()).data.unlocked),
     proxyConfigured: Boolean(process.env.SABAN_KEY),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     tools: TOOLS.map((t) => ({ id: t.id, title: t.title, method: t.method, kind: t.kind, summary: t.summary })),
@@ -137,22 +142,27 @@ export const studioStatus = createServerFn({ method: "GET" }).handler(async () =
 });
 
 export const studioLogin = createServerFn({ method: "POST" })
-  .inputValidator((data: { password: string }) => data)
+  .inputValidator(z.object({ password: z.string().max(200) }))
   .handler(async ({ data }) => {
-    if ((data.password || "") !== password()) return { ok: false as const };
-    setCookie(COOKIE, "ok", { httpOnly: true, path: "/", sameSite: "lax", maxAge: 60 * 60 * 14 });
+    const expected = process.env.STUDIO_PASSWORD;
+    if (!expected) throw new Error("יש להגדיר סיסמת כניסה");
+    const a = createHash("sha256").update(data.password).digest();
+    const b = createHash("sha256").update(expected).digest();
+    if (!timingSafeEqual(a, b)) return { ok: false as const };
+    const session = await gateSession();
+    await session.update({ unlocked: true });
     return { ok: true as const };
   });
 
 export const studioLogout = createServerFn({ method: "POST" }).handler(async () => {
-  deleteCookie(COOKIE, { path: "/" });
+  await (await gateSession()).clear();
   return { ok: true };
 });
 
 export const runTool = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: string; params: Record<string, string>; mode: "sandbox" | "live" }) => data)
+  .inputValidator(z.object({ id: z.string().max(80), params: z.record(z.string().max(4000)), mode: z.enum(["sandbox", "live"]) }))
   .handler(async ({ data }) => {
-    assertGate();
+    await assertGate();
     return executeTool(data.id, data.params || {}, data.mode === "live" ? "live" : "sandbox");
   });
 
@@ -161,7 +171,7 @@ export const chatTurn = createServerFn({ method: "POST" })
     (data: { message: string; persona: string; harelMode: "address" | "quiet"; mode: "sandbox" | "live" }) => data,
   )
   .handler(async ({ data }) => {
-    assertGate();
+    await assertGate();
     const mode = data.mode === "live" ? "live" : "sandbox";
     return planReply({
       message: data.message || "",
@@ -172,9 +182,9 @@ export const chatTurn = createServerFn({ method: "POST" })
   });
 
 export const transcribeAudio = createServerFn({ method: "POST" })
-  .inputValidator((data: { mimeType: string; base64: string }) => data)
+  .inputValidator(z.object({ mimeType: z.string().max(100), base64: z.string().max(12000000) }))
   .handler(async ({ data }) => {
-    assertGate();
+    await assertGate();
     const key = process.env.GEMINI_API_KEY;
     if (!key) {
       return { ok: false as const, text: "", message: "אין מפתח תמלול בשרת — כתוב את ההודעה." };

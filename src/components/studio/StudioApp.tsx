@@ -10,7 +10,7 @@ import {
   type Trace,
   type UiCard,
 } from "@/lib/noa/engine";
-import { chatTurn, runTool, studioLogin, studioLogout, studioStatus, transcribeAudio } from "@/server/noa.functions";
+import { chatTurn, runTool, studioLogin, studioLogout, studioStatus, transcribeAudio } from "@/lib/noa/noa.functions";
 
 type Room = "chat" | "studio" | "tools";
 type Mode = "sandbox" | "live";

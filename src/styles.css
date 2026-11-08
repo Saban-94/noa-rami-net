@@ -278,5 +278,8 @@ html.dark .diff-del {
 
 .studio-shell { overflow-x: clip; }
 .studio-shell textarea { min-width: 0; }
+.studio-shell section > div { min-width: 0; }
+.studio-shell section > div > div:first-child { flex-wrap: wrap; gap: 0.5rem; }
+.studio-shell textarea { max-width: 100%; }
 .studio-shell pre { direction: ltr; text-align: left; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .typing span { animation: none; } }

@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794115299065,
+      "tag": "0000_noa_mobile_access_trips_devices",
+      "breakpoints": true
+    }
+  ]
 }

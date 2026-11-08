@@ -14,16 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      noa_delivery_writes: {
+        Row: {
+          created_at: string
+          id: string
+          note_number: string
+          payload: Json
+          sheet_row: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          note_number: string
+          payload: Json
+          sheet_row?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note_number?: string
+          payload?: Json
+          sheet_row?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      noa_devices: {
+        Row: {
+          created_at: string
+          id: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      noa_trips: {
+        Row: {
+          accuracy: number | null
+          arrival_time: string
+          consented_at: string | null
+          created_at: string
+          destination: string
+          driver_id: string | null
+          id: string
+          latitude: number | null
+          location_updated_at: string | null
+          longitude: number | null
+          requested_by: string
+          status: string
+          stopped_at: string | null
+          waze_url: string
+        }
+        Insert: {
+          accuracy?: number | null
+          arrival_time?: string
+          consented_at?: string | null
+          created_at?: string
+          destination: string
+          driver_id?: string | null
+          id?: string
+          latitude?: number | null
+          location_updated_at?: string | null
+          longitude?: number | null
+          requested_by: string
+          status?: string
+          stopped_at?: string | null
+          waze_url?: string
+        }
+        Update: {
+          accuracy?: number | null
+          arrival_time?: string
+          consented_at?: string | null
+          created_at?: string
+          destination?: string
+          driver_id?: string | null
+          id?: string
+          latitude?: number | null
+          location_updated_at?: string | null
+          longitude?: number | null
+          requested_by?: string
+          status?: string
+          stopped_at?: string | null
+          waze_url?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "harel" | "rami"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +275,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["harel", "rami"],
+    },
   },
 } as const

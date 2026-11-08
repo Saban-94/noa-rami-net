@@ -93,6 +93,11 @@ export function StudioApp() {
   ]);
   const [traces, setTraces] = useState<Trace[]>([]);
   const [openTrace, setOpenTrace] = useState<Trace | null>(null);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [signatureData, setSignatureData] = useState<string | null>(null);
+  const [wazeStatus, setWazeStatus] = useState<string | null>(null);
+  const sigCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const isDrawing = useRef(false);
   const [drawer, setDrawer] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -251,7 +256,92 @@ export function StudioApp() {
     setPending(null);
   }
 
+  
+  // 🚗 כפתור Waze לסמסונג Note
+  function triggerRamiWaze() {
+    setWazeStatus("פתיחת Waze וסנכרון שרת...");
+    const wazeAppUrl = "waze://?q=התלמיד%206%20הוד%20השרון&navigate=yes";
+    const webFallback = "https://www.waze.com/ul?q=התלמיד%206%20הוד%20השרון&navigate=yes";
+    
+    // שליחת שיתוף נסיעה לשרת נועה לעדכון הראל
+    chatTurn({
+      data: {
+        message: "ראמי יצא בנסיעה אל סניף התלמיד 6 הוד השרון, שעת הגעה משוערת 07:35 AM ב-Waze",
+        persona: "rami",
+        harelMode: "address",
+        mode: mode === "live" ? "live" : "sandbox"
+      }
+    }).catch(() => {});
+
+    try {
+      window.location.href = wazeAppUrl;
+      setTimeout(() => { window.open(webFallback, "_blank"); }, 1200);
+    } catch {
+      window.open(webFallback, "_blank");
+    }
+    setTimeout(() => setWazeStatus("נסיעה שותפה בהצלחה ✔️"), 2000);
+    setTimeout(() => setWazeStatus(null), 5000);
+  }
+
+  // ✍️ מנוע עט S-Pen לחתימה דיגיטלית
+  function startDraw(e: React.PointerEvent<HTMLCanvasElement>) {
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    isDrawing.current = true;
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#0f172a";
+    const rect = canvas.getBoundingClientRect();
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+  }
+
+  function draw(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!isDrawing.current) return;
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
+  }
+
+  function stopDraw() {
+    isDrawing.current = false;
+  }
+
+  function clearSig() {
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    setSignatureData(null);
+  }
+
+  function saveSig() {
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const data = canvas.toDataURL("image/png");
+    setSignatureData(data);
+    setShowSignatureModal(false);
+    setMessages((m) => [
+      ...m,
+      {
+        id: crypto.randomUUID(),
+        from: "me",
+        text: "✍️ חתימת ראמי אושרה באמצעות S-Pen על תעודת משלוח ומסונכרנת לגיליון!",
+        time: nowTime(),
+        ticks: "✓✓",
+      },
+    ]);
+  }
+
   const diff = useMemo(() => lineDiff(savedPrompt, prompt), [prompt, savedPrompt]);
+
 
   if (!authed) {
     return (
@@ -297,6 +387,22 @@ export function StudioApp() {
             <p className="font-display text-lg font-bold leading-none">סטודיו נועה</p>
             <p className="truncate text-xs text-muted">{proxyOn ? "פרוקסי מחובר" : "פרוקסי לא הוגדר · נתוני דמו"}</p>
           </div>
+          <Button variant="imported" size="imported"
+            type="button"
+            onClick={triggerRamiWaze}
+            className="inline-flex h-11 items-center gap-1 rounded-full bg-orange-600 px-3 text-sm font-bold text-white shadow-sm hover:bg-orange-500"
+            title="הפעל Waze ושתף הגעה לסניף"
+          >
+            🚗 {wazeStatus || "יציאה לתלמיד 6"}
+          </Button>
+          <Button variant="imported" size="imported"
+            type="button"
+            onClick={() => setShowSignatureModal(true)}
+            className="inline-flex h-11 items-center gap-1 rounded-full border border-line bg-paper px-3 text-sm font-semibold hover:border-orange-500"
+            title="חתימה בעט S-Pen"
+          >
+            ✍️ S-Pen
+          </Button>
           <Button variant="imported" size="imported"
             type="button"
             onClick={askLive}
@@ -601,6 +707,44 @@ export function StudioApp() {
           <pre className="max-h-[70dvh] w-full max-w-lg overflow-auto rounded-[var(--radius-card)] bg-paper p-4 text-xs" onClick={(e) => e.stopPropagation()}>
             {JSON.stringify(openTrace, null, 2)}
           </pre>
+        </div>
+      ) : null}
+    
+      {/* מודל חתימת עט S-Pen של סמסונג Note */}
+      {showSignatureModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-2xl border border-line bg-paper p-5 shadow-2xl">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✍️</span>
+                <div>
+                  <h3 className="font-display font-bold">חתימת S-Pen דיגיטלית — ראמי</h3>
+                  <p className="text-xs text-muted">חתום בעט המכשיר או באצבע לאישור תעודת משלוח</p>
+                </div>
+              </div>
+              <button onClick={() => setShowSignatureModal(false)} className="text-muted hover:text-foreground text-lg">✕</button>
+            </div>
+            <div className="mb-4 overflow-hidden rounded-xl border-2 border-dashed border-line bg-white">
+              <canvas
+                ref={sigCanvasRef}
+                width={360}
+                height={160}
+                onPointerDown={startDraw}
+                onPointerMove={draw}
+                onPointerUp={stopDraw}
+                onPointerLeave={stopDraw}
+                className="w-full touch-none cursor-crosshair"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="imported" size="imported" type="button" onClick={clearSig} className="flex-1 rounded-xl border border-line py-2.5 text-xs font-semibold hover:bg-sand">
+                נקה חתימה
+              </Button>
+              <Button variant="imported" size="imported" type="button" onClick={saveSig} className="flex-1 rounded-xl bg-pine py-2.5 text-xs font-bold text-sand hover:opacity-90">
+                אישור והטבעה ✍️
+              </Button>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

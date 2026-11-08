@@ -1,0 +1,86 @@
+[
+  {
+    "capability": "code",
+    "source": "uploaded ZIP",
+    "outcome": "Import studio UI, Hebrew RTL, engine and catalog",
+    "status": "in_progress",
+    "next_action": "Verify desktop and phone"
+  },
+  {
+    "capability": "auth",
+    "source": "shared studio password; scaffold Better Auth unused",
+    "outcome": "Preserve shared gate with encrypted session; omit unused account scaffold",
+    "status": "pending",
+    "next_action": "Set studio password securely"
+  },
+  {
+    "capability": "schema",
+    "source": "unused auth migrations",
+    "outcome": "No application database queries detected",
+    "status": "not_applicable",
+    "next_action": "None"
+  },
+  {
+    "capability": "records",
+    "source": "literal studio tables and browser storage",
+    "outcome": "Preserve supplied table rows and local prompt storage",
+    "status": "in_progress",
+    "next_action": "Verify editor"
+  },
+  {
+    "capability": "providers",
+    "source": "Saban proxy and Gemini transcription",
+    "outcome": "Preserve provider calls",
+    "status": "pending",
+    "next_action": "Supply existing provider keys securely"
+  },
+  {
+    "capability": "storage",
+    "source": "external GitHub image URLs",
+    "outcome": "Import accessible source media",
+    "status": "pending",
+    "next_action": "Check media access"
+  },
+  {
+    "capability": "public_endpoints",
+    "source": "no app external server routes",
+    "outcome": "None detected",
+    "status": "not_applicable",
+    "next_action": "None"
+  },
+  {
+    "capability": "webhooks",
+    "source": "none used",
+    "outcome": "None detected",
+    "status": "not_applicable",
+    "next_action": "None"
+  },
+  {
+    "capability": "schedules",
+    "source": "none used",
+    "outcome": "None detected",
+    "status": "not_applicable",
+    "next_action": "None"
+  },
+  {
+    "capability": "auth_identities",
+    "source": "unused auth scaffold without user export",
+    "outcome": "No account system used by StudioApp",
+    "status": "not_applicable",
+    "next_action": "None"
+  },
+  {
+    "capability": "cutover",
+    "source": "unpublished target",
+    "outcome": "No external callbacks detected",
+    "status": "pending",
+    "next_action": "Publish after verification"
+  },
+  {
+    "capability": "verification",
+    "source": "studio main workflows",
+    "outcome": "Test gate, chat, tools and knowledge",
+    "status": "pending",
+    "next_action": "Execute browser checks"
+  }
+]

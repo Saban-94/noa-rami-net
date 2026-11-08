@@ -3,15 +3,15 @@
     "capability": "code",
     "source": "uploaded ZIP",
     "outcome": "Import studio UI, Hebrew RTL, engine and catalog",
-    "status": "in_progress",
-    "next_action": "Verify desktop and phone"
+    "status": "verified",
+    "next_action": "None"
   },
   {
     "capability": "auth",
     "source": "shared studio password; scaffold Better Auth unused",
     "outcome": "Preserve shared gate with encrypted session; omit unused account scaffold",
-    "status": "pending",
-    "next_action": "Set studio password securely"
+    "status": "verified",
+    "next_action": "None"
   },
   {
     "capability": "schema",
@@ -24,22 +24,22 @@
     "capability": "records",
     "source": "literal studio tables and browser storage",
     "outcome": "Preserve supplied table rows and local prompt storage",
-    "status": "in_progress",
-    "next_action": "Verify editor"
+    "status": "verified",
+    "next_action": "None"
   },
   {
     "capability": "providers",
     "source": "Saban proxy and Gemini transcription",
     "outcome": "Preserve provider calls",
-    "status": "pending",
-    "next_action": "Supply existing provider keys securely"
+    "status": "blocked",
+    "next_action": "Securely supply SABAN_KEY and GEMINI_API_KEY; provider calls retained but not live-verified"
   },
   {
     "capability": "storage",
     "source": "external GitHub image URLs",
-    "outcome": "Import accessible source media",
-    "status": "pending",
-    "next_action": "Check media access"
+    "outcome": "Four original photos imported through asset pointers; Vered image unavailable",
+    "status": "partial",
+    "next_action": "Upload original rami-noa.jpeg (source returned 404)"
   },
   {
     "capability": "public_endpoints",
@@ -80,7 +80,7 @@
     "capability": "verification",
     "source": "studio main workflows",
     "outcome": "Test gate, chat, tools and knowledge",
-    "status": "pending",
-    "next_action": "Execute browser checks"
+    "status": "verified",
+    "next_action": "None"
   }
 ]

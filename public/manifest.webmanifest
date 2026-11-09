@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "נועה · ח. סבן",
+  "short_name": "נועה",
+  "description": "שיחה עם נועה, תעודות משלוח ושיתוף נסיעה מאושר",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#14362c",
+  "background_color": "#f4efe6",
+  "icons": [
+    { "src": "/icons/noa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/noa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -32,3 +32,6 @@ use the editor.
 - Preserve the imported studio UI and deterministic reply engine independently of the target TanStack bootstrap, so framework updates do not replace the source experience.
 - Studio access uses a server-only shared password and encrypted session; do not restore the source's fixed cookie flag or fallback password.
 - Preserve Saban proxy and Gemini transcription providers; missing credentials must not be reported as live success.
+- Mobile GPS and delivery writes require Cloud-authenticated roles, assigned only after verified ownership of configured staff emails; the studio persona selector is not authorization.
+- PWA installation is manifest-only; the Firebase messaging worker handles notifications, never app-shell caching.
+- Trip requests and explicit driver consent are stored in Cloud with database-enforced location boundaries; browser GPS runs only while the app is open.

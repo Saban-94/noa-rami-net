@@ -8,6 +8,13 @@
       "when": 1794115299065,
       "tag": "0000_noa_mobile_access_trips_devices",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794190073340,
+      "tag": "0001_noa_trip_consent_boundary",
+      "breakpoints": true
     }
   ]
 }

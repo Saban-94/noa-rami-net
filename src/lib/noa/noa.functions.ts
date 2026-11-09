@@ -6,7 +6,8 @@ import { MEDIA, TOOLS, WRITE_IDS } from "@/lib/noa/catalog";
 import { planReply, type Json, type Trace } from "@/lib/noa/engine";
 
 async function gateSession() {
-  const secret = process.env["SESSION_SECRET"] || "saban_noa_secure_session_secret_default_key_2026_32chars";
+  const secret = process.env["SESSION_SECRET"];
+  if (!secret) throw new Error("הכניסה עדיין לא הוגדרה");
   return useSession<{ unlocked?: boolean }>({
     name: "noa-studio", password: secret, maxAge: 60 * 60 * 14,
     cookie: { httpOnly: true, secure: true, sameSite: "lax", path: "/" },
@@ -143,7 +144,8 @@ export const studioStatus = createServerFn({ method: "GET" }).handler(async () =
 export const studioLogin = createServerFn({ method: "POST" })
   .inputValidator(z.object({ password: z.string().max(200) }))
   .handler(async ({ data }) => {
-    const expected = process.env["STUDIO_PASSWORD"] || "saban1994";
+    const expected = process.env["STUDIO_PASSWORD"];
+    if (!expected) throw new Error("יש להגדיר סיסמת כניסה");
     const a = createHash("sha256").update(data.password).digest();
     const b = createHash("sha256").update(expected).digest();
     if (!timingSafeEqual(a, b)) return { ok: false as const };

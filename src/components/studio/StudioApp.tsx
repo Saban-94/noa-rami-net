@@ -109,6 +109,7 @@ export function StudioApp() {
   const [testerValues, setTesterValues] = useState<Record<string, string>>({});
   const [testerOut, setTesterOut] = useState<Trace | null>(null);
   const [proxyOn, setProxyOn] = useState(false);
+  const [memoryLoaded, setMemoryLoaded] = useState(false);
 
   useEffect(() => {
     studioStatus()
@@ -119,6 +120,11 @@ export function StudioApp() {
       .catch(() => setAuthed(false))
       .finally(() => setReady(true));
     try {
+      const history = localStorage.getItem("noa-chat-memory");
+      if (history) {
+        const value: unknown = JSON.parse(history);
+        if (Array.isArray(value)) setMessages(value.filter((m): m is Msg => Boolean(m && typeof m === "object" && "id" in m && "text" in m && typeof m.text === "string" && "from" in m && (m.from === "me" || m.from === "noa"))).slice(-80));
+      }
       const p = localStorage.getItem("noa-prompt");
       if (p) {
         setPrompt(p);
@@ -133,7 +139,13 @@ export function StudioApp() {
     } catch {
       /* ignore */
     }
+    setMemoryLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (!memoryLoaded || !authed) return;
+    try { localStorage.setItem("noa-chat-memory", JSON.stringify(messages.slice(-80))); } catch { /* storage unavailable */ }
+  }, [messages, memoryLoaded, authed]);
 
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
@@ -610,6 +622,7 @@ export function StudioApp() {
 }
 
 function CardView({ card, onPick }: { card: UiCard; onPick: (id: string) => void }) {
+  if (card.type === "trip") return <div className="mobile-trip mt-3"><p className="text-xs text-muted">קישור ששיתף ראמי</p><strong className="font-display text-lg">ראמי בדרך</strong><p>{card.destination}</p><p className="trip-arrival" dir="ltr">{card.arrival}</p><Button variant="imported" size="imported" asChild className="mobile-primary"><a href={card.url} target="_blank" rel="noopener noreferrer">מעקב ב-Waze</a></Button></div>;
   if (card.type === "image") {
     if (!card.src) return <p className="text-sm text-muted">{card.caption} · התמונה המקורית אינה זמינה</p>;
     return (

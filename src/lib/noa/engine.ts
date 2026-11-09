@@ -1,4 +1,5 @@
 import { MEDIA } from "./catalog";
+import { parseWazeShare } from "./mobile-rules";
 
 export type Role =
   | "harel"
@@ -11,6 +12,7 @@ export type Role =
   | "new";
 
 export type UiCard =
+  | { type: "trip"; url: string; arrival: string; destination: string }
   | { type: "image"; src: string; caption: string }
   | { type: "buttons"; buttons: { id: string; title: string }[] }
   | { type: "product"; sku: string; name: string; note: string }
@@ -119,6 +121,11 @@ async function plan(input: {
   const role = detectRole(input.message, input.persona);
   const cards: UiCard[] = [];
   const note = noteNumber(input.message);
+  const sharedTrip = parseWazeShare(input.message);
+  if (sharedTrip) {
+    cards.push({ type: "trip", ...sharedTrip });
+    return { text: "הראל, זהו קישור הנסיעה שראמי שיתף.", cards, traces };
+  }
 
   if (role === "harel" && input.harelMode === "quiet" && !/הראל|נועה/.test(input.message)) {
     return { text: "", cards, traces };

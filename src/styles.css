@@ -283,3 +283,20 @@ html.dark .diff-del {
 .studio-shell textarea { max-width: 100%; }
 .studio-shell pre { direction: ltr; text-align: left; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .typing span { animation: none; } }
+
+.mobile-hub { max-width: 760px; margin: auto; padding: 24px 20px 60px; }
+.mobile-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; }
+.mobile-install { display: flex; gap: 14px; align-items: center; padding: 18px 0; border-block: 1px solid var(--color-line); }
+.mobile-install img { border-radius: 14px; flex-shrink: 0; }
+.mobile-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-block: 16px; }
+.mobile-primary { background: var(--color-pine); color: var(--color-paper); min-height: 44px; padding: 10px 16px; border-radius: 8px; white-space: normal; }
+.mobile-secondary { border: 1px solid var(--color-line); min-height: 44px; padding: 10px 14px; border-radius: 8px; background: var(--color-paper); color: var(--color-ink); white-space: normal; }
+.mobile-link { color: var(--color-pine-2); text-decoration: underline; white-space: normal; }
+.mobile-notice { padding: 14px; background: var(--color-sand-2); border-inline-start: 3px solid var(--color-gold); margin-block: 12px; overflow-wrap: anywhere; }
+.mobile-section { padding-block: 24px; border-bottom: 1px solid var(--color-line); }
+.mobile-form { display: grid; gap: 14px; margin-top: 16px; }
+.mobile-form label { display: grid; gap: 6px; font-size: 14px; }
+.mobile-form input, .mobile-form textarea { min-width: 0; width: 100%; background: var(--color-paper); border: 1px solid var(--color-line); border-radius: 8px; padding: 12px; color: var(--color-ink); }
+.mobile-trip { border: 1px solid var(--color-line); background: var(--color-paper); border-radius: 8px; padding: 16px; }
+.trip-arrival { text-align: right; color: var(--color-pine); font-size: 28px; font-weight: 700; margin-block: 8px; }
+@media(max-width: 420px) { .mobile-hub { padding-inline: 16px; } .mobile-heading { flex-wrap: wrap; } .mobile-install { flex-wrap: wrap; } }

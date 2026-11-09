@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Lock, Moon, Sun, Radio } from "lucide-react";
 import { TOOLS } from "@/lib/noa/catalog";
@@ -317,6 +318,7 @@ export function StudioApp() {
           </Button>
         </div>
         <nav className="mx-auto flex max-w-6xl gap-1 px-3 pb-2">
+          <Button variant="imported" size="imported" asChild className="h-10 rounded-full bg-sand-2 px-3 text-sm"><Link to="/mobile">מכשיר ונסיעה</Link></Button>
           {(
             [
               ["chat", "חדר צ'אט"],
